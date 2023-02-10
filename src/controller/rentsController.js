@@ -1,3 +1,5 @@
+import db from "../config/database.js";
+
 export async function showRents(req, res) {
   try {
   } catch (error) {
