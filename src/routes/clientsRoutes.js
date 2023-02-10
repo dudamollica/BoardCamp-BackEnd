@@ -13,6 +13,6 @@ const clientsRouter = Router();
 clientsRouter.get("/customers", showClients);
 clientsRouter.get("/customers/:id", showEspecificClient);
 clientsRouter.post("/customers", validateSchema(clientsSchema), insertClient);
-clientsRouter.put("/customers/:id", updateClients);
+clientsRouter.put( "/customers/:id", validateSchema(clientsSchema), updateClients);
 
 export default clientsRouter;

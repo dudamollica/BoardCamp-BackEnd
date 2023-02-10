@@ -36,7 +36,33 @@ export async function insertClient(req, res) {
 }
 
 export async function updateClients(req, res) {
+  const { id } = req.params;
+  const { name, phone, cpf, birthday } = req.body;
   try {
+    const client = await db.query(`SELECT * FROM customers WHERE id='${id}'`);
+    if (client.rows[0].name != name) {
+      await db.query(`UPDATE customers SET name='${name}' where id=${id}`);
+    }
+
+    if (client.rows[0].phone != phone) {
+      await db.query(`UPDATE customers SET phone='${phone}' where id=${id}`);
+    }
+
+    if (client.rows[0].cpf != cpf) {
+      const cpfExist = await db.query(
+        `SELECT * FROM customers WHERE cpf='${cpf}'`
+      );
+      if (cpfExist.rows.length > 0) return res.status(409).send("Status 409");
+      await db.query(`UPDATE customers SET cpf='${cpf}' where id=${id}`);
+    }
+
+    if (client.rows[0].birthday != birthday) {
+      await db.query(
+        `UPDATE customers SET birthday='${birthday}' where id=${id}`
+      );
+    }
+
+    res.status(200).send("OK");
   } catch (error) {
     res.status(500).send(error.message);
   }
