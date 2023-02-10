@@ -20,7 +20,12 @@ export async function showEspecificClient(req, res) {
 }
 
 export async function insertClient(req, res) {
+  const { name, phone, cpf, birthday } = req.body;
   try {
+    await db.query(
+      `INSERT INTO customers (name, phone, cpf, birthday) VALUES ("${name}","${phone}",${cpf},${birthday})`
+    );
+    res.status(201).send("Ok")
   } catch (error) {
     res.status(500).send(error.message);
   }

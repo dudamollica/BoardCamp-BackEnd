@@ -12,9 +12,9 @@ export async function insertGames(req, res) {
   const { name, image, stockTotal, pricePerDay } = req.body;
   try {
     await db.query(
-      `INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES ("${name}","${image}",${stockTotal},${pricePerDay})`
+      `INSERT INTO games (name, image, stockTotal, pricePerDay) VALUES (${name},${image},${stockTotal},${pricePerDay})`
     );
-    res.send("Ok")
+    res.status(201).send("Ok")
   } catch (error) {
     res.status(500).send(error.message);
   }
