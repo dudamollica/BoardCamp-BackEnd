@@ -14,7 +14,7 @@ import {
   rentsRouter.get("/rentals", showRents);
   rentsRouter.post("/rentals", validateSchema(rentsSchema), validateClientGame, insertRent);
   rentsRouter.post("/rentals/:id/return", finalizeRent);
-  rentsRouter.get("/rentals/:id", deleteRent);
+  rentsRouter.delete("/rentals/:id", deleteRent);
   
   export default rentsRouter;
   
