@@ -27,17 +27,39 @@ export async function insertRent(req, res) {
   }
 }
 
-export async function finalizeRent(req, res) {}
+export async function finalizeRent(req, res) {
+  const { id } = req.params;
+  await db.query(`UPDATE rentals SET "returnDate"='${dayjs().format("YYYY-MM-DD")}' WHERE id=${id}`);
+
+  const rent = await db.query(`SELECT * FROM rentals WHERE id=${id}`)
+  const daysRented = rent.rows[0].daysRented
+  const correctDate = dayjs().add(daysRented, 'day').format("YYYY-MM-DD")
+  const returnDate = rent.rows[0].returnDate
+  
+  const date1 = dayjs(correctDate)
+  const date2 = dayjs(returnDate)
+  const difference = date1.diff(date2, 'day')
+
+  if (date1.isBefore(date2)) {
+    const delayFee = difference * rent.rows[0].originalPrice
+    await db.query(`UPDATE rentals SET "delayFee"=${delayFee} WHERE id=${id}`)
+  // } else if (date1.isSame(date2)) {
+  //   console.log('date1 é a mesma data que date2');
+  // } else {
+  //   console.log('adiantado');
+  }
+  res.status(200).send("OK");
+}
 
 export async function deleteRent(req, res) {
   const { id } = req.params;
-  console.log(id)
-  const rentalExist = await db.query(`SELECT * FROM rentals WHERE id=${id}`)
-  if(rentalExist.rows[0].length == 0) return res.status(404).send("Aluguel não existe") 
+  const rentalExist = await db.query(`SELECT * FROM rentals WHERE id=${id}`);
+  if (rentalExist.rows[0].length == 0)
+    return res.status(404).send("Aluguel não existe");
 
-  const isReturn = rentalExist.rows[0].returnDate
-  if (!isReturn) return res.status(400).send("Jogo ainda não devolvido") 
+  const isReturn = rentalExist.rows[0].returnDate;
+  if (!isReturn) return res.status(400).send("Jogo ainda não devolvido");
 
-  await db.query(`DELETE FROM rentals WHERE id=${id}`)
-  res.status(200).send("Deletado")
+  await db.query(`DELETE FROM rentals WHERE id=${id}`);
+  res.status(200).send("Deletado");
 }
