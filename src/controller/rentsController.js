@@ -33,7 +33,8 @@ export async function finalizeRent(req, res) {
 
   const rent = await db.query(`SELECT * FROM rentals WHERE id=${id}`)
   const daysRented = rent.rows[0].daysRented
-  const correctDate = dayjs().add(daysRented, 'day').format("YYYY-MM-DD")
+  const rentDate = rent.rows[0].rentDate
+  const correctDate = dayjs(rentDate).add(daysRented, 'day').format("YYYY-MM-DD")
   const returnDate = rent.rows[0].returnDate
   
   const date1 = dayjs(correctDate)
@@ -43,8 +44,9 @@ export async function finalizeRent(req, res) {
   const pricePerDay = await db.query(`SELECT ("pricePerDay") FROM games WHERE id=${gameId}`)
   const delayFee = difference * pricePerDay.rows[0].pricePerDay
 
-  // if (date1.isBefore(date2)) {
+  if (date1.isBefore(date2)) {
   await db.query(`UPDATE rentals SET "delayFee"=${delayFee} WHERE id=${id}`)
+  }
   res.status(200).send("OK");
 }
 
