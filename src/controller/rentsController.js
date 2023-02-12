@@ -39,15 +39,12 @@ export async function finalizeRent(req, res) {
   const date1 = dayjs(correctDate)
   const date2 = dayjs(returnDate)
   const difference = date1.diff(date2, 'day')
+  const gameId = rent.rows[0].gameId
+  const pricePerDay = await db.query(`SELECT ("pricePerDay") FROM games WHERE id=${gameId}`)
+  const delayFee = difference * pricePerDay.rows[0].pricePerDay
 
-  if (date1.isBefore(date2)) {
-    const delayFee = difference * rent.rows[0].originalPrice
-    await db.query(`UPDATE rentals SET "delayFee"=${delayFee} WHERE id=${id}`)
-  // } else if (date1.isSame(date2)) {
-  //   console.log('date1 é a mesma data que date2');
-  // } else {
-  //   console.log('adiantado');
-  }
+  // if (date1.isBefore(date2)) {
+  await db.query(`UPDATE rentals SET "delayFee"=${delayFee} WHERE id=${id}`)
   res.status(200).send("OK");
 }
 
