@@ -52,8 +52,9 @@ export async function finalizeRent(req, res) {
 
 export async function deleteRent(req, res) {
   const { id } = req.params;
+
   const rentalExist = await db.query(`SELECT * FROM rentals WHERE id=${id}`);
-  if (rentalExist.rows[0].length == 0) return res.status(404).send("Aluguel não existe");
+  if (rentalExist.rows.length == 0) return res.status(404).send("Aluguel não existe");
 
   const isReturn = rentalExist.rows[0].returnDate;
   if (!isReturn) return res.status(400).send("Jogo ainda não devolvido");
